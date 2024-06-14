@@ -18,7 +18,8 @@ public class RoadGenerator : Singleton<RoadGenerator>
 
     void Update()
     {
-        if (speed == 0) return;
+        if (speed == 0)
+            return;
         foreach (GameObject road in roads)
         {
             road.transform.position -= new Vector3(0, 0, speed * Time.deltaTime);
@@ -34,7 +35,10 @@ public class RoadGenerator : Singleton<RoadGenerator>
     private void CreateNextRoad()
     {
         Vector3 position = Vector3.zero;
-        if (roads.Count > 0) { position = roads[roads.Count - 1].transform.position + new Vector3(0, 0, 10);}
+        if (roads.Count > 0)
+        {
+            position = roads[roads.Count - 1].transform.position + new Vector3(0, 0, 10);
+        }
         GameObject go = Instantiate(RoadPrefab, position, Quaternion.identity);
         go.transform.SetParent(transform);
         roads.Add(go);
