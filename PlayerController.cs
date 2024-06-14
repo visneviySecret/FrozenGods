@@ -11,14 +11,8 @@ public class PlayerController : MonoBehaviour
     float pointFinish;
     Rigidbody rb;
     Vector3 targetVelocity;
-    bool isMoving = false;
-    bool isJumping = false;
     float jumpPower = 6;
-    float jumpGravity = -35;
-    float realGravity = -9.8f;
-    public float jumpForce = 0.125f;
     private bool isGrounded;
-    Coroutine movingCoroutine;
 
     void Start()
     {
@@ -42,31 +36,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void MoveHorizontal(float speed)
+    void Jump()
     {
-        pointStart = pointFinish;
-        pointFinish += Mathf.Sign(speed) * laneOffset;
-
-        if (!isMoving)
-        {
-            StartCoroutine(MoveCoroutine(speed));
-        }
-        // if (isMoving) { StopCoroutine(movingCoroutine); isMoving = false; }
-        // movingCoroutine = StartCoroutine(MoveCoroutine(speed));
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
     }
 
-    void MoveLinear()
+    void MoveHorizontal(float speed)
     {
-        AccelerateSpeed();
-        if (!isJumping)
-            Jump();
+        if (!isGrounded)
+        {
+            return;
+        }
+        pointStart = pointFinish;
+        pointFinish += Mathf.Sign(speed) * laneOffset;
+        StartCoroutine(MoveCoroutine(speed));
     }
 
     IEnumerator MoveCoroutine(float vectorX)
     {
-        isMoving = true;
-        if (!isJumping)
-            Jump();
+        Jump();
         while (Mathf.Abs(pointStart - transform.position.x) < laneOffset)
         {
             yield return new WaitForFixedUpdate();
@@ -80,7 +69,6 @@ public class PlayerController : MonoBehaviour
         }
         rb.velocity = Vector3.zero;
         transform.position = new Vector3(pointFinish, transform.position.y, transform.position.z);
-        isMoving = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -97,12 +85,6 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = false;
         }
-    }
-
-    void Jump()
-    {
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
     }
 
     bool IsGrounded()
