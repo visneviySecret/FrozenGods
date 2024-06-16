@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
         while (Mathf.Abs(pointStart - transform.position.x) < laneOffset)
         {
             yield return new WaitForFixedUpdate();
-            rb.velocity = new Vector3(vectorX, rb.velocity.y, 0);
+            rb.velocity = new Vector3(vectorX / 2.7f, rb.velocity.y, 0);
             float x = Mathf.Clamp(
                 transform.position.x,
                 Mathf.Min(pointStart, pointFinish),
