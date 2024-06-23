@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     Vector3 targetVelocity;
     float jumpPower = 6;
     private bool isGrounded;
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+
+    // public float groundDistance = 0.4f;
+    public LayerMask groundMask;
 
     void Start()
     {
@@ -22,6 +27,20 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        isGrounded = true;
+        // isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        Vector3 checkPosition = groundCheck.position;
+
+        // Создаем луч вниз от позиции groundCheck
+        Ray ray = new Ray(checkPosition, Vector3.down);
+        bool isGround = Physics.Raycast(ray, groundDistance, groundMask);
+
+        // TODO разабраться с отрабатыванием isGround
+        // Debug.Log("groundCheck.position" + groundCheck.position);
+        // Debug.Log("groundMask" + groundMask);
+        // Debug.Log("isGrounded" + isGrounded);
+        // Debug.Log("isGround" + isGround);
+
         if (Input.GetKeyDown(KeyCode.A) && pointFinish > -2 * laneOffset)
         {
             MoveHorizontal(-laneChangeSpeed);
@@ -59,33 +78,38 @@ public class PlayerController : MonoBehaviour
         while (Mathf.Abs(pointStart - transform.position.x) < laneOffset)
         {
             yield return new WaitForFixedUpdate();
-            rb.velocity = new Vector3(vectorX / 2.7f, rb.velocity.y, 0);
+            rb.velocity = new Vector3(vectorX / 3.4f, rb.velocity.y, 0);
             float x = Mathf.Clamp(
                 transform.position.x,
                 Mathf.Min(pointStart, pointFinish),
                 Mathf.Max(pointStart, pointFinish)
             );
+            // TODO к перемещению добавить ещё вращение
             transform.position = new Vector3(x, transform.position.y, transform.position.z);
         }
         rb.velocity = Vector3.zero;
         transform.position = new Vector3(pointFinish, transform.position.y, transform.position.z);
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
+    // private void OnCollisionEnter(Collision collision)
+    // {
+    //     Debug.Log($"Collided with {collision.gameObject.tag}");
+    //     // Проверка на столкновение с землей
+    //     if (collision.gameObject.CompareTag("Ground"))
+    //     {
+    //         isGrounded = true;
+    //     }
+    // }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
-    }
+    // private void OnCollisionExit(Collision collision)
+    // {
+    //     Debug.Log($"Exited collision with {collision.gameObject.tag}");
+    //     // Проверка на выход из контакта с землей
+    //     if (collision.gameObject.CompareTag("Ground"))
+    //     {
+    //         isGrounded = false;
+    //     }
+    // }
 
     bool IsGrounded()
     {
